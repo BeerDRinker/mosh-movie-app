@@ -83,7 +83,7 @@ export default class Movies extends Component {
 		const { totalCount, data: movies } = this.getPagedData(selectedGenre, allMovies, sortColumn, currentPage, pageSize)
 
 		return (
-			<div className="row mt-3">
+			<div className="row">
 				<div className="col-sm">
 					<ListGroup
 						items={genres}

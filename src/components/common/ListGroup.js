@@ -10,7 +10,7 @@ const ListGroup = ({ items, onItemSelect, textProperty, valueProperty, selectedI
 		}
 	}
 
-	return (<ul className="list-group">
+	return (<ul className="pt-3 list-group">
 		{ items.map(item => (
 			<li 
 				onClick={() => onItemSelect(item) }

@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSortUp, faSortDown } from '@fortawesome/fontawesome-free-solid'
-import { faHeart as faHeart_regular } from '@fortawesome/fontawesome-free-regular'
 
 export default class TableHeader extends Component {
 
