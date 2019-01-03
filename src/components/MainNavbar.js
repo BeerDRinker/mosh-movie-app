@@ -32,6 +32,12 @@ export default class MainNavbar extends React.Component {
               <NavItem>
                 <NavLink className="nav-link" to="/rentals">Rentals</NavLink>
               </NavItem>
+              <NavItem>
+                <NavLink className="nav-link" to="/login">Login</NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink className="nav-link" to="/register">Register</NavLink>
+              </NavItem>
             </Nav>
           </Collapse>
         </Navbar>
