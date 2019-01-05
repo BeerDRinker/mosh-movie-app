@@ -32,7 +32,7 @@ constructor() {
 				<h1 className="mt-3">Register</h1>
 				<Form onSubmit={(e) => this.handleSubmit(e)}>
 
-					{this.renderInput('email', 'Username', 'email')}
+					{this.renderInput('email', 'Username', 'email', true)}
 
 					{this.renderInput('password', 'Password', 'password')}
 

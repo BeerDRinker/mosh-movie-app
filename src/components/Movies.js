@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import _ from 'lodash'
-
+import { Link } from 'react-router-dom'
 import { getMovies } from '../services/fakeMovieService'
 import { getGenres } from '../services/fakeGenreService'
 import { paginate } from '../utils/paginate'
@@ -75,11 +75,6 @@ export default class Movies extends Component {
 	
 	render() {
 		const { movies: allMovies, pageSize, currentPage, genres, selectedGenre, sortColumn } = this.state
-
-		if (allMovies.length === 0) {
-			return (<h5 className="pt-3 pb-3">There are no movies in the database</h5>)
-		}
-
 		const { totalCount, data: movies } = this.getPagedData(selectedGenre, allMovies, sortColumn, currentPage, pageSize)
 
 		return (
@@ -91,24 +86,31 @@ export default class Movies extends Component {
 						onItemSelect={this.handleGenereSelect}
 						/>
 				</div>
-				<div className="col-sm">
-					<h5 className="pt-3 pb-3">Showing { totalCount } movies in the database</h5>
+				<div className="col-sm mt-3">
+				<Link to="/movies/new" className="btn btn-primary">New Movie</Link>
+				{ allMovies.length === 0
+				? 
+					(<h5 className="pt-3 pb-3">There are no movies in the database</h5>)
+				:
+					(<Fragment>
+						<h5 className="pt-3 pb-3">Showing { totalCount } movies in the database</h5>
 
-					<MoviesTable
-						movies={movies}
-						deleteMovie={this.deleteMovie}
-						likeMovie={this.likeMovie}
-						onSort={this.handleSort}
-						sortColumn={sortColumn}
-					/>
+						<MoviesTable
+							movies={movies}
+							deleteMovie={this.deleteMovie}
+							likeMovie={this.likeMovie}
+							onSort={this.handleSort}
+							sortColumn={sortColumn}
+						/>
 
-					<Pagination
-						itemsCount={totalCount}
-						pageSize={pageSize}
-						currentPage={currentPage}
-						onPageChange={this.handlePageChange}
-					/>
-
+						<Pagination
+							itemsCount={totalCount}
+							pageSize={pageSize}
+							currentPage={currentPage}
+							onPageChange={this.handlePageChange}
+						/>
+					</Fragment>)
+				}
 				</div>
 			</div>
 		)

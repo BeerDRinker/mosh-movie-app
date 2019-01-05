@@ -31,7 +31,7 @@ export default class LoginForm extends AppForm {
 				<h1 className="mt-3">Login</h1>
 				<Form onSubmit={(e) => this.handleSubmit(e)}>
 
-					{this.renderInput('username', 'Username')}
+					{this.renderInput('username', 'Username', 'text', true)}
 
 					{this.renderInput('password', 'Password', 'password')}
 

@@ -4,6 +4,7 @@ import { Button } from 'reactstrap'
 import Joi from 'joi-browser'
 
 import Input from './Input'
+import Select from './Select'
 
 export default class AppForm extends Component {
 	state = {
@@ -62,18 +63,32 @@ export default class AppForm extends Component {
 		>{label}</Button>
 	)
 
-	renderInput = (name, label, type = 'text' ) => {
+	renderInput = (name, label, type = 'text', autoFocus = false ) => {
 		const { data, errors } = this.state
 		return (
 		<Input
 			type={type}
 			name={name}
 			value={data[name]}
-			autoFocus={true}
+			autoFocus={autoFocus}
 			label={label}
 			onChange={this.handleChange}
 			error={errors[name]}
 		/>
 		)
+	}
+
+	renderSelect = (name, label, options) => {
+		const { data, errors } = this.state
+		return (
+			<Select 
+				name={name}
+				value={data[name]}
+				label={label}
+				options={options}
+				onChange={this.handleChange}
+				error={errors[name]}
+			/>
+    );
 	}
 }
