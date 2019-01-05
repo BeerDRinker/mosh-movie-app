@@ -7,6 +7,7 @@ import { paginate } from '../utils/paginate'
 
 import Pagination from './common/Pagination'
 import ListGroup from './common/ListGroup'
+import SearchBox from './common/SearchBox'
 import MoviesTable from './MoviesTable';
 
 export default class Movies extends Component {
@@ -16,7 +17,9 @@ export default class Movies extends Component {
 		genres: [],
 		currentPage: 1,
 		pageSize: 4,
-		sortColumn: { path: 'title', order: 'asc' }
+		selectedGenre: null,
+		sortColumn: { path: 'title', order: 'asc' },
+		searchQuery: '',
 	}
 
 	componentDidMount() {
@@ -53,7 +56,8 @@ export default class Movies extends Component {
 	handleGenereSelect = genre => {
 		this.setState({
 			selectedGenre: genre,
-			currentPage: 1
+			currentPage: 1,
+			searchQuery: '',
 		})
 	}
 
@@ -61,10 +65,15 @@ export default class Movies extends Component {
 		this.setState({ sortColumn })
 	}
 
-	getPagedData = (selectedGenre, allMovies, sortColumn, currentPage, pageSize) => {
-		const filtered = selectedGenre && selectedGenre._id
-			? allMovies.filter(m => m.genre._id === selectedGenre._id)
-			: allMovies
+	getPagedData = (searchQuery, selectedGenre, allMovies, sortColumn, currentPage, pageSize) => {
+		let filtered = allMovies
+
+		if(searchQuery) {
+			filtered = allMovies.filter(m => 
+				m.title.toLowerCase().startsWith(searchQuery.toLowerCase()))
+		} else if (selectedGenre && selectedGenre._id) {
+			filtered = allMovies.filter(m => m.genre._id === selectedGenre._id)
+		}
 
 		const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order])
 
@@ -72,10 +81,14 @@ export default class Movies extends Component {
 
 		return { totalCount: filtered.length, data: movies }
 	}
+
+	handleSearch = (query) => {
+		this.setState({ searchQuery: query, selectedGenre: null, currentPage: 1 })
+	}
 	
 	render() {
-		const { movies: allMovies, pageSize, currentPage, genres, selectedGenre, sortColumn } = this.state
-		const { totalCount, data: movies } = this.getPagedData(selectedGenre, allMovies, sortColumn, currentPage, pageSize)
+		const { searchQuery, movies: allMovies, pageSize, currentPage, genres, selectedGenre, sortColumn } = this.state
+		const { totalCount, data: movies } = this.getPagedData(searchQuery, selectedGenre, allMovies, sortColumn, currentPage, pageSize)
 
 		return (
 			<div className="row">
@@ -94,6 +107,8 @@ export default class Movies extends Component {
 				:
 					(<Fragment>
 						<h5 className="pt-3 pb-3">Showing { totalCount } movies in the database</h5>
+						
+						<SearchBox value={searchQuery} onChange={this.handleSearch} />
 
 						<MoviesTable
 							movies={movies}
