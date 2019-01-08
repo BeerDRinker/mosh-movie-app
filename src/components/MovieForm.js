@@ -3,8 +3,8 @@ import { Form } from 'reactstrap'
 import Joi from 'joi-browser'
 
 import AppForm from './common/AppForm'
-import { getGenres } from '../services/fakeGenreService'
-import { getMovie, saveMovie } from '../services/fakeMovieService'
+import { getGenresAPI } from '../services/genreService'
+import { getMovieAPI, saveMovieAPI } from '../services/moviesService'
 
 export default class MovieForm extends AppForm {
   constructor() {
@@ -21,19 +21,11 @@ export default class MovieForm extends AppForm {
 		}
   }
 
-  componentDidMount() {
-		const genres = getGenres()
-    this.setState({ genres })
-    
-    const movieId = this.props.match.params.id
-    if (movieId === 'new') return
-
-    const movie = getMovie(movieId)
-    if (!movie) return this.props.history.replace('/not-found')
-
-    this.setState({ data: this.mapToViewModal(movie) })
+  getGenres = async () => {
+    const { data: genres } = await getGenresAPI()
+		this.setState({ genres })
   }
-  
+
   mapToViewModal(movie) {
     return {
       _id: movie._id,
@@ -42,6 +34,28 @@ export default class MovieForm extends AppForm {
       numberInStock: movie.numberInStock,
       dailyRentalRate: movie.dailyRentalRate
     }
+  }
+  
+  getMovie = async () => {
+    try {
+      const movieId = this.props.match.params.id
+      if (movieId === 'new') return
+      const { data: movie } = await getMovieAPI(movieId)
+      this.setState({ data: this.mapToViewModal(movie) })
+    } catch (error) {
+      if(error.response && error.response.status === 404 ) {
+        this.props.history.replace('/not-found')
+      }
+    }
+  }
+  
+  saveMovie = async (data) => {
+		await saveMovieAPI(data)
+	}
+
+  componentDidMount() {
+    this.getGenres()
+    this.getMovie()
   }
 
 	schema = {
@@ -53,7 +67,7 @@ export default class MovieForm extends AppForm {
   }
   
 	doSubmit = () => {
-    saveMovie(this.state.data)
+    this.saveMovie(this.state.data)
     this.props.history.push('/movies')
   }
 

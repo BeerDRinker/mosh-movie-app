@@ -1,8 +1,10 @@
 import React, { Component, Fragment } from 'react'
 import _ from 'lodash'
 import { Link } from 'react-router-dom'
-import { getMovies } from '../services/fakeMovieService'
-import { getGenres } from '../services/fakeGenreService'
+import { tosat } from 'react-toastify'
+
+import { getMoviesAPI, deleteMovieAPI } from '../services/moviesService'
+import { getGenresAPI } from '../services/genreService'
 import { paginate } from '../utils/paginate'
 
 import Pagination from './common/Pagination'
@@ -18,22 +20,45 @@ export default class Movies extends Component {
 		currentPage: 1,
 		pageSize: 4,
 		selectedGenre: null,
-		sortColumn: { path: 'title', order: 'asc' },
+		sortColumn: { path: 'titlgetGenresAPI', order: 'asc' },
 		searchQuery: '',
 	}
 
+	getGenres = async () => {
+		const { data } = await getGenresAPI()
+		const genres = [{ _id: '', name: 'All Genres' }, ...data ]
+		this.setState({ genres })
+	}
+
+	getMovies = async () => {
+		const { data } = await getMoviesAPI()
+		const movies = [...data ]
+		this.setState({ movies })
+	}
+
 	componentDidMount() {
-		const genres = [{ _id: '', name: 'All Genres' }, ...getGenres() ]
-		this.setState({
-			movies: getMovies(),
-			genres
-		})
+		this.getGenres()
+		this.getMovies()
 	}
 
 	deleteMovie = (id) => {
+		deleteMovieAPI(id)
+	}
+
+	handleDeleteMovie = async (id) => {
+		const originslMovies = this.state.movies
 		this.setState({
-			movies: this.state.movies.filter(movie => movie._id !== id)
+			movies: originslMovies.filter(movie => movie._id !== id)
 		})
+		
+		try {
+			await this.deleteMovie(id)
+		} catch(error) {
+			if (error.response && error.response.status === 404) {
+				tosat.error('This movie has already been deleted.')
+				this.setState({ movies: originslMovies })
+			}
+		}
 	}
 
 	likeMovie = (id, status) => {
@@ -112,7 +137,7 @@ export default class Movies extends Component {
 
 						<MoviesTable
 							movies={movies}
-							deleteMovie={this.deleteMovie}
+							deleteMovie={this.handleDeleteMovie}
 							likeMovie={this.likeMovie}
 							onSort={this.handleSort}
 							sortColumn={sortColumn}
