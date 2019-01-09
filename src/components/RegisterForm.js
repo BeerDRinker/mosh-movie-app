@@ -1,6 +1,9 @@
 import React from 'react'
 import { Form } from 'reactstrap'
 import Joi from 'joi-browser'
+import { toast } from 'react-toastify';
+
+import { register } from '../services/userService'
 
 import AppForm from './common/AppForm';
 
@@ -23,9 +26,21 @@ constructor() {
 		username: Joi.string().required().label('Name')
 	}
 
-	doSubmit = () => {
-		console.log('Submitted');
+	doSubmit = async () => {
+		try {
+			const response = await register(this.state.data)
+			localStorage.setItem('token', response.headers['x-auth-token'])
+			this.props.history.push('/')
+		} catch(error) {
+			if(error.response && error.response.status === 400) {
+				toast.error(error.response.data)
+				const errors = {...this.state.errors}
+				errors.email = error.response.data
+				this.setState({ errors })
+			}
+		}
 	}
+
 	render() {
 		return (
 			<div>
