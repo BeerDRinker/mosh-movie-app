@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Link, NavLink } from 'react-router-dom'
 import { Collapse, Navbar, NavbarToggler, Nav, NavItem } from 'reactstrap'
 
@@ -32,12 +32,26 @@ export default class MainNavbar extends React.Component {
               <NavItem>
                 <NavLink className="nav-link" to="/rentals">Rentals</NavLink>
               </NavItem>
-              <NavItem>
-                <NavLink className="nav-link" to="/login">Login</NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink className="nav-link" to="/register">Register</NavLink>
-              </NavItem>
+              { !this.props.user &&
+                <Fragment>
+                  <NavItem>
+                    <NavLink className="nav-link" to="/login">Login</NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink className="nav-link" to="/register">Register</NavLink>
+                  </NavItem>
+                </Fragment>
+              }
+              { this.props.user &&
+                <Fragment>
+                  <NavItem>
+                    <NavLink className="nav-link" to="/profile">{this.props.user.name}</NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink className="nav-link" to="/logout">Logout</NavLink>
+                  </NavItem>
+                </Fragment>
+              }
             </Nav>
           </Collapse>
         </Navbar>

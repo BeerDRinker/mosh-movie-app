@@ -2,8 +2,9 @@ import React from 'react'
 import { Form } from 'reactstrap'
 import Joi from 'joi-browser'
 import { toast } from 'react-toastify';
+import { Redirect } from 'react-router-dom'
 
-import { login } from '../services/authService'
+import auth from '../services/authService'
 import AppForm from './common/AppForm'
 
 export default class LoginForm extends AppForm {
@@ -26,9 +27,9 @@ export default class LoginForm extends AppForm {
 	doSubmit = async () => {
 		const { email, password } = this.state.data
 		try {
-			const { data } = await login(email, password)
-			localStorage.setItem('token', data)
-			this.props.history.push('/')
+			await auth.login(email, password)
+			const { state } = this.props.location
+			window.location = state ? state.from.pathname : '/'
 		} catch (error) {
 			if(error.response && error.response.status === 400)	{
 				toast.error(error.response.data)
@@ -40,6 +41,7 @@ export default class LoginForm extends AppForm {
 	}
 
   render() {
+		if(auth.getCurrentUser()) return <Redirect to="/" />
     return (
 			<div>
 				<h1 className="mt-3">Login</h1>

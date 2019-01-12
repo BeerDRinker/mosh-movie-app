@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
+import auth from '../services/authService'
 
 import Like from './common/Like'
 import Table from './common/Table' 
@@ -17,11 +18,23 @@ export default class MoviesTable extends Component {
 			key: "like", 
 			content: (movie) => <Like liked={movie.liked} id={movie._id} likeMovie={this.props.likeMovie} />
 		},
-		{
-			key: "delete",
-			content: (movie) => (<button onClick={() => this.props.deleteMovie(movie._id)} className="btn btn-danger">Delete</button>)
-		}	
 	]
+
+	deleteBtn = {
+		key: "delete",
+		content: (movie) => { 
+			const isAdmin =  auth.getCurrentUser()
+			if(isAdmin) return <button onClick={() => this.props.deleteMovie(movie._id)} className="btn btn-danger">Delete</button>
+			return null
+		}
+	}
+
+	constructor() {
+		super()
+		const user = auth.getCurrentUser()
+		if(user && user.isAdmin) 
+		this.columns.push(this.deleteBtn)
+	}
 
 	render() {
 		const { movies, sortColumn, onSort } = this.props

@@ -4,6 +4,7 @@ import Joi from 'joi-browser'
 import { toast } from 'react-toastify';
 
 import { register } from '../services/userService'
+import auth from '../services/authService'
 
 import AppForm from './common/AppForm';
 
@@ -29,8 +30,8 @@ constructor() {
 	doSubmit = async () => {
 		try {
 			const response = await register(this.state.data)
-			localStorage.setItem('token', response.headers['x-auth-token'])
-			this.props.history.push('/')
+			auth.loginWithJwt('token', response.headers['x-auth-token'])
+			window.location ='/'
 		} catch(error) {
 			if(error.response && error.response.status === 400) {
 				toast.error(error.response.data)

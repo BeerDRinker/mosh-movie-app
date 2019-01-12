@@ -114,6 +114,7 @@ export default class Movies extends Component {
 	render() {
 		const { searchQuery, movies: allMovies, pageSize, currentPage, genres, selectedGenre, sortColumn } = this.state
 		const { totalCount, data: movies } = this.getPagedData(searchQuery, selectedGenre, allMovies, sortColumn, currentPage, pageSize)
+		const { user } = this.props;
 
 		return (
 			<div className="row">
@@ -125,7 +126,13 @@ export default class Movies extends Component {
 						/>
 				</div>
 				<div className="col-sm mt-3">
-				<Link to="/movies/new" className="btn btn-primary">New Movie</Link>
+				{ user && 
+					<Link
+						to="/movies/new"
+						className="btn btn-primary">
+						New Movie
+					</Link>
+				}
 				{ allMovies.length === 0
 				? 
 					(<h5 className="pt-3 pb-3">There are no movies in the database</h5>)
@@ -141,6 +148,7 @@ export default class Movies extends Component {
 							likeMovie={this.likeMovie}
 							onSort={this.handleSort}
 							sortColumn={sortColumn}
+							user={user}
 						/>
 
 						<Pagination
